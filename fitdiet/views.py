@@ -1,5 +1,5 @@
-from .serializers import CookingStepSerializer, DietDaySerializer, DietSerializer, MealSerializer,UserDietSerializer
-from .models import CookingStep, Diet, DietDay, Meal, UserDiet
+from .serializers import CookingStepSerializer, DietDaySerializer, DietSerializer, FavouriteDietSerializer, FavouriteMealSerializer, MealSerializer,UserDietSerializer
+from .models import CookingStep, Diet, DietDay, FavouriteDiet, FavouriteMeal, Meal, UserDiet
 from rest_framework import mixins
 from rest_framework import viewsets
 
@@ -50,3 +50,21 @@ class CookingStepView(mixins.CreateModelMixin,
                   viewsets.GenericViewSet):
     queryset = CookingStep.objects.all()
     serializer_class = CookingStepSerializer
+
+class FavouriteMealView(mixins.CreateModelMixin,
+                  mixins.ListModelMixin,
+                  mixins.DestroyModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  viewsets.GenericViewSet):
+    queryset = FavouriteMeal.objects.all()
+    serializer_class = FavouriteMealSerializer
+
+class FavouriteDietView(mixins.CreateModelMixin,
+                  mixins.ListModelMixin,
+                  mixins.DestroyModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  viewsets.GenericViewSet):
+    queryset = FavouriteDiet.objects.all()
+    serializer_class = FavouriteDietSerializer

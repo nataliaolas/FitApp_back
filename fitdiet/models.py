@@ -61,7 +61,7 @@ class Meal(models.Model):
 class CookingStep(models.Model):
     """ model that contains steps needed to cook meal """
     step = models.TextField()
-    meal = models.ForeignKey(Meal, related_name='Steps',on_delete=models.CASCADE, null=True)
+    meal = models.ForeignKey(Meal, related_name='steps',on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.step
@@ -71,7 +71,7 @@ class IngredientPortion(models.Model):
     """ model that repesents ingredients in the meal """
     ingredient = models.CharField(max_length=50, default="Przykladowy składnik")
     portion = models.CharField(max_length=30)
-    meal = models.ForeignKey(Meal, related_name='Ingredients',on_delete=models.CASCADE, null=True)
+    meal = models.ForeignKey(Meal, related_name='ingredients',on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.ingredient

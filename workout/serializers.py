@@ -1,4 +1,4 @@
-from .models import Exercise, ExerciseEquipment, ExerciseInWorkout, ExerciseStep, MuscleGroup, WorkoutPlan, WorkoutSession
+from .models import Exercise, ExerciseEquipment, ExerciseInWorkout, ExerciseStep, FavouriteExercise, FavouriteWorkoutPlan, FavouriteWorkoutSession, MuscleGroup, WorkoutPlan, WorkoutSession
 import datetime
 from django.contrib.auth.models import User
 from rest_framework import serializers
@@ -77,4 +77,20 @@ class WorkoutSessionSerializer(serializers.ModelSerializer):
 class WorkoutPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkoutPlan
+        fields = '__all__'
+
+
+class FavouriteExerciseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FavouriteExercise
+        fields = '__all__'
+
+class FavouriteWorkoutSessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FavouriteWorkoutSession
+        fields = '__all__'
+
+class FavouriteWorkoutPlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FavouriteWorkoutPlan
         fields = '__all__'

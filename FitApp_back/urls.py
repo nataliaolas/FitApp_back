@@ -13,13 +13,29 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from main import api
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework import routers
+from main.urls import router as main_router
+from workout.urls import router as workout_router
+from fitdiet.urls import router as diet_router
+
+
+
+router = routers.DefaultRouter()
+router.registry.extend(main_router.registry)
+router.registry.extend(workout_router.registry)
+router.registry.extend(diet_router.registry)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('main/', include('main.urls')),
-    path('diet/', include('fitdiet.urls')),
-    path('', include('workout.urls')),
+    path('auth/register', api.RegisterAPI.as_view()),
+    path('auth/login', api.LoginAPI.as_view()),
+    path('auth/logout', api.Logout.as_view()),
+    path('', include(router.urls)),
+    # path('', include('workout.urls')),
+    # path('diet/', include('fitdiet.urls')),
+    # path('main/', include('main.urls'))
     # path('', include('fitdiet.urls'))
 ]

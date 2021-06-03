@@ -1,5 +1,5 @@
-from .serializers import ExerciseEquipmentSerializer, ExerciseInWorkoutSerializer, ExerciseSerializer, ExerciseStepSerializer, MuscleGroupSerializer, WorkoutPlanSerializer, WorkoutSessionSerializer
-from .models import Exercise, ExerciseEquipment, ExerciseInWorkout, ExerciseStep, MuscleGroup, WorkoutPlan, WorkoutSession
+from .serializers import ExerciseEquipmentSerializer, ExerciseInWorkoutSerializer, ExerciseSerializer, ExerciseStepSerializer, FavouriteExerciseSerializer, FavouriteWorkoutPlanSerializer, FavouriteWorkoutSessionSerializer, MuscleGroupSerializer, WorkoutPlanSerializer, WorkoutSessionSerializer
+from .models import Exercise, ExerciseEquipment, ExerciseInWorkout, ExerciseStep, FavouriteExercise, FavouriteWorkoutPlan, FavouriteWorkoutSession, MuscleGroup, WorkoutPlan, WorkoutSession
 from rest_framework import mixins
 from rest_framework import viewsets
 # Create your views here.
@@ -68,3 +68,30 @@ class WorkoutPlanView(mixins.CreateModelMixin,
                   viewsets.GenericViewSet):
     queryset = WorkoutPlan.objects.all()
     serializer_class = WorkoutPlanSerializer
+
+class FavouriteExerciseView(mixins.CreateModelMixin,
+                  mixins.ListModelMixin,
+                  mixins.DestroyModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  viewsets.GenericViewSet):
+    queryset = FavouriteExercise.objects.all()
+    serializer_class = FavouriteExerciseSerializer
+
+class FavouriteWorkoutSessionView(mixins.CreateModelMixin,
+                  mixins.ListModelMixin,
+                  mixins.DestroyModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  viewsets.GenericViewSet):
+    queryset = FavouriteWorkoutSession.objects.all()
+    serializer_class = FavouriteWorkoutSessionSerializer
+
+class FavouriteWorkoutPlanView(mixins.CreateModelMixin,
+                  mixins.ListModelMixin,
+                  mixins.DestroyModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  viewsets.GenericViewSet):
+    queryset = FavouriteWorkoutPlan.objects.all()
+    serializer_class = FavouriteWorkoutPlanSerializer
