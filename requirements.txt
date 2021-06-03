@@ -1,0 +1,8 @@
+Django==3.2.3
+djangorestframework
+Markdown
+django-filter
+Pillow
+knox
+django-rest-knox
+Jinja2
