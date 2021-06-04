@@ -52,6 +52,18 @@ class ExerciseView(mixins.CreateModelMixin,
             return Exercise.objects.all()
         else:
             return Exercise.objects.filter(public=True)
+    def create(self, request, *args, **kwargs):
+        print("\n\n ***************\n")
+        print(request.data)
+        print("\n\n **************** \n")
+        print("\n\n ***************\n")
+        print(request.data['muscle_groups'])
+        muscle_groups_list = []
+        muscle_groups_list.append(request.data['muscle_groups'])
+        request.data['muscle_groups'] = muscle_groups_list
+        print(request.data['muscle_groups'])
+        print("\n\n **************** \n")
+        return super().create(request, *args, **kwargs)
 
 class ExerciseInWorkoutView(mixins.CreateModelMixin,
                   mixins.ListModelMixin,
