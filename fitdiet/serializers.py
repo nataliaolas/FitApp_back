@@ -4,7 +4,6 @@ from rest_framework import serializers
 from .models import CookingStep, Diet, DietDay, DietType, FavouriteDiet, FavouriteMeal, IngredientPortion, Meal, UserDiet, UserDietDay
 
 
-
 class CookingStepSerializer(serializers.ModelSerializer):
     class Meta:
         model = CookingStep
@@ -32,7 +31,8 @@ class MealSerializer(serializers.ModelSerializer):
             kcal=validated_data['kcal'],
             proteins=validated_data['proteins'],
             fats=validated_data['fats'],
-            carbohydrates=validated_data['carbohydrates']
+            carbohydrates=validated_data['carbohydrates'],
+            author=validated_data['author']
         )
         if validated_data['ingredients']:
             for new_ingredient in validated_data['ingredients']:

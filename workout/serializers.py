@@ -1,4 +1,4 @@
-from .models import Exercise, ExerciseEquipment, ExerciseInWorkout, ExerciseStep, FavouriteExercise, FavouriteWorkoutPlan, FavouriteWorkoutSession, MuscleGroup, WorkoutPlan, WorkoutSession
+from .models import Exercise, ExerciseEquipment, ExerciseInWorkout, ExerciseStep, FavouriteExercise, FavouriteWorkoutPlan, FavouriteWorkoutSession, MuscleGroup, UserWorkoutPlan, WorkoutPlan, WorkoutSession
 import datetime
 from django.contrib.auth.models import User
 from rest_framework import serializers
@@ -30,7 +30,8 @@ class ExerciseSerializer(serializers.ModelSerializer):
             picture = validated_data['picture'],
             public = validated_data['public'],
             description = validated_data['description'],
-            exercise_equipment = validated_data['exercise_equipment']
+            exercise_equipment = validated_data['exercise_equipment'],
+            author = validated_data['author']
         )
         new_exercise.muscle_groups.set(validated_data['muscle_groups'])
         new_exercise.save()
@@ -70,13 +71,46 @@ class ExerciseInWorkoutSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class WorkoutSessionSerializer(serializers.ModelSerializer):
+    exercise_in_workout = ExerciseInWorkoutSerializer(many=True)
     class Meta:
         model = WorkoutSession
         fields = '__all__'
 
+    def create(self, validated_data):
+        print('\n****************\n')
+        print(validated_data)
+        print('\n****************\n')
+        new_workout_session =WorkoutSession.objects.create(
+            name = validated_data['name'],
+            picture = validated_data['picture'],
+            time_of_workout = validated_data['time_of_workout'],
+        )
+        new_workout_session.trained_muscles.set(validated_data['trained_muscles'])
+        new_workout_session.save()
+        if validated_data['exercise_in_workout']:
+            for new_exercise_in_workout in validated_data['exercise_in_workout']:
+                exercise_in_workout_create = ExerciseInWorkout.objects.create(
+                    exercise=new_exercise_in_workout['exercise'],
+                    workout_session=new_workout_session,
+                    load_range=new_exercise_in_workout['load_range'],
+                    min_repetitions=new_exercise_in_workout['min_repetitions'],
+                    max_repetitions=new_exercise_in_workout['max_repetitions'],
+                    number_of_sets=new_exercise_in_workout['number_of_sets'],
+                    rest_between_sets=new_exercise_in_workout['rest_between_sets'],
+                    rest_after_exercise=new_exercise_in_workout['rest_after_exercise']
+                )
+
+
+        return new_workout_session
+
 class WorkoutPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkoutPlan
+        fields = '__all__'
+
+class USerWorkoutPlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserWorkoutPlan
         fields = '__all__'
 
 

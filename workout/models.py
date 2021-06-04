@@ -31,6 +31,7 @@ class Exercise(models.Model):
         blank=True,
         upload_to='workout/exercise')
     public = models.BooleanField(default=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField()
     muscle_groups = models.ManyToManyField(MuscleGroup)
     exercise_equipment = models.ForeignKey(
@@ -41,6 +42,14 @@ class Exercise(models.Model):
 
     def get_exercise_steps(self):
         return self.steps.all()
+
+    def save(self, *args, **kwargs):
+        if self.author.is_superuser:
+            self.public = True
+        else:
+            self.public=False
+        super(Exercise, self).save(*args, **kwargs)
+
 
 class UserExercise(models.Model):
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE, null=True)
@@ -108,7 +117,7 @@ class ExerciseInWorkout(models.Model):
     exercise = models.ForeignKey(
         Exercise, on_delete=models.CASCADE, null=True)
     workout_session = models.ForeignKey(
-        WorkoutSession, on_delete=models.CASCADE)
+        WorkoutSession, on_delete=models.CASCADE, related_name='exercise_in_workout', null=True)
     load_range = models.CharField(
         max_length=30, blank=True, default="Brak ciężaru - 10% ONE-RM")
     min_repetitions = models.IntegerField(default=4)

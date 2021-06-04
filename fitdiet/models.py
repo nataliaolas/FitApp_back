@@ -39,6 +39,7 @@ class Meal(models.Model):
     picture = models.ImageField(
         'Zdjecie posilku', null=True, blank=True, upload_to='diet_planner/meals')
     public = models.BooleanField(default=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.TextField()
     meal_type = models.CharField(max_length=1, choices=MEAL_TYPE_CHOICES,
                                  default=EAT_WHENEVER_YOU_WANT, null=True, blank=True)
@@ -47,6 +48,14 @@ class Meal(models.Model):
     proteins = models.IntegerField(null=True, blank=True)
     fats = models.IntegerField(null=True, blank=True)
     carbohydrates = models.IntegerField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.author.is_superuser:
+            self.public = True
+        else:
+            self.public=False
+        super(Meal, self).save(*args, **kwargs)
+
 
     def __str__(self):
         return self.name
