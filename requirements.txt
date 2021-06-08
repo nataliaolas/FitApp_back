@@ -6,3 +6,4 @@ Pillow
 knox
 django-rest-knox
 Jinja2
+django-cors-headers
