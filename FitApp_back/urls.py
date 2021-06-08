@@ -20,6 +20,8 @@ from rest_framework import routers
 from main.urls import router as main_router
 from workout.urls import router as workout_router
 from fitdiet.urls import router as diet_router
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 
@@ -40,4 +42,4 @@ urlpatterns = [
     # path('diet/', include('fitdiet.urls')),
     # path('main/', include('main.urls'))
     # path('', include('fitdiet.urls'))
-]
+] +  static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

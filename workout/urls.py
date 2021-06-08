@@ -22,5 +22,6 @@ app_name = 'fitdiet'
 urlpatterns = [
      path('workoutplansessions/<int:pk>', views.workout_sessions_in_plan),
      path('userexercises/<int:pk>', views.user_exercises),
+     path('current_workout_session/<int:pk>', views.current_workout_session)
      # path('exercises_in_session/<int:pk>',views.exercise_in_workout_with_exercise_names)
 ]

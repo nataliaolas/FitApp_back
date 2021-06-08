@@ -1,6 +1,7 @@
+import datetime
 from typing import List
-from .serializers import ExerciseEquipmentSerializer, ExerciseInWorkoutSerializer, ExerciseSerializer, ExerciseStepSerializer, FavouriteExerciseSerializer, FavouriteWorkoutPlanSerializer, FavouriteWorkoutSessionSerializer, MuscleGroupSerializer, USerWorkoutPlanSerializer, WorkoutPlanSerializer, WorkoutSessionSerializer
-from .models import Exercise, ExerciseEquipment, ExerciseInWorkout, ExerciseStep, FavouriteExercise, FavouriteWorkoutPlan, FavouriteWorkoutSession, MuscleGroup, UserWorkoutPlan, WorkoutPlan, WorkoutSession
+from .serializers import ExerciseEquipmentSerializer, ExerciseInWorkoutSerializer, ExerciseSerializer, ExerciseStepSerializer, FavouriteExerciseSerializer, FavouriteWorkoutPlanSerializer, FavouriteWorkoutSessionSerializer, MuscleGroupSerializer, USerWorkoutPlanSerializer, UserWorkoutSessionSerializer, WorkoutPlanSerializer, WorkoutSessionSerializer
+from .models import Exercise, ExerciseEquipment, ExerciseInWorkout, ExerciseStep, FavouriteExercise, FavouriteWorkoutPlan, FavouriteWorkoutSession, MuscleGroup, UserWorkoutPlan, UserWorkoutSession, WorkoutPlan, WorkoutSession
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework import filters
@@ -146,6 +147,19 @@ def workout_sessions_in_plan(request,pk):
 #         serializer = ExerciseInWorkoutWithExerciseNameSerializer(exercise_in_workout,many=True)
 #         return Response(serializer.data)
 #     return Response("Cos nie pyklo")
+
+@api_view(['GET'])
+def current_workout_session(request,pk):
+    if request.method == 'GET':
+        workout_plan = UserWorkoutPlan.objects.get(id=pk)
+        now = datetime.datetime.now()
+        workout_session = UserWorkoutSession.objects.get(workout_plan=workout_plan, date_of_workout=now)
+        if workout_session:
+            serializer = UserWorkoutSessionSerializer(workout_session)
+        else:
+            return Response("Nie ma dzisiaj treningu.")
+        return Response(serializer.data)
+    return Response("Cos nie pyklo")
 
 
 class FavouriteExerciseView(mixins.CreateModelMixin,

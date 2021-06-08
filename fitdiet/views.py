@@ -6,6 +6,7 @@ from rest_framework import filters
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+import datetime
 # Create your views here.
 
 class MealView(mixins.CreateModelMixin,
@@ -35,6 +36,20 @@ def diet_days_in_diet(request,pk):
         diet = Diet.objects.get(id=pk)
         diet_days = diet.diet_days
         serializer = DietDaySerializer(diet_days,many=True)
+        return Response(serializer.data)
+    return Response("Cos nie pyklo")
+
+
+@api_view(['GET'])
+def current_diet_day(request,pk):
+    if request.method == 'GET':
+        diet = UserDiet.objects.get(id=pk)
+        now = datetime.datetime.now()
+        diet_day = UserDietDay.objects.get(diet=diet, diet_day_date=now)
+        if diet_day:
+            serializer = UserDietDaySerializer(diet_day)
+        else:
+            return Response("Nie ma dzisiaj diety.")
         return Response(serializer.data)
     return Response("Cos nie pyklo")
 
@@ -105,7 +120,7 @@ class FavouriteMealView(mixins.CreateModelMixin,
                   viewsets.GenericViewSet):
     queryset = FavouriteMeal.objects.all()
     serializer_class = FavouriteMealSerializer
-    
+
     filter_backends = [DjangoFilterBackend]
     search_fields = ['user',]
         

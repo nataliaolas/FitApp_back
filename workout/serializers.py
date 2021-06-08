@@ -168,6 +168,11 @@ class FavouriteWorkoutPlanSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class UserWorkoutSessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserWorkoutSession
+        fields = '__all__'
+
 # class ExerciseInWorkoutWithExerciseNameSerializer(serializers.ModelSerializer):
 #     exercise = serializers.RelatedField(read_only=True)
 #     class Meta:
