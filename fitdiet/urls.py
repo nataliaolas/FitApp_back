@@ -18,4 +18,5 @@ router.register(r'FavouriteDiet', views.FavouriteDietView)
 app_name = 'fitdiet'
 urlpatterns = [
     path('usermeals/<int:pk>', views.user_exercises),
+    path('diet_days_in_diet/<int:pk>', views.diet_days_in_diet)
 ]

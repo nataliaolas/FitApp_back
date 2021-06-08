@@ -5,6 +5,7 @@ from rest_framework import viewsets
 from rest_framework import filters
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 # Create your views here.
 
 class MealView(mixins.CreateModelMixin,
@@ -26,6 +27,17 @@ def user_exercises(request,pk):
         serializer = MealSerializer(meal,many=True)
         return Response(serializer.data)
     return Response("Cos nie pyklo")
+
+
+@api_view(['GET'])
+def diet_days_in_diet(request,pk):
+    if request.method == 'GET':
+        diet = Diet.objects.get(id=pk)
+        diet_days = diet.diet_days
+        serializer = DietDaySerializer(diet_days,many=True)
+        return Response(serializer.data)
+    return Response("Cos nie pyklo")
+
 
 class DietView(mixins.CreateModelMixin,
                   mixins.ListModelMixin,
@@ -93,10 +105,9 @@ class FavouriteMealView(mixins.CreateModelMixin,
                   viewsets.GenericViewSet):
     queryset = FavouriteMeal.objects.all()
     serializer_class = FavouriteMealSerializer
-
-    def get_queryset(self):
-    #TODO: Mozliwe ze trzeba to zrobic zeby zwracalo posilki(bo teraz to moze byc klopotliwe po froncie)
-        return FavouriteMeal.objects.filter(user=self.request.user)
+    
+    filter_backends = [DjangoFilterBackend]
+    search_fields = ['user',]
         
 
 class FavouriteDietView(mixins.CreateModelMixin,
@@ -108,6 +119,5 @@ class FavouriteDietView(mixins.CreateModelMixin,
     queryset = FavouriteDiet.objects.all()
     serializer_class = FavouriteDietSerializer
 
-    def get_queryset(self):
-    #TODO: Mozliwe ze trzeba to zrobic zeby zwracalo posilki(bo teraz to moze byc klopotliwe po froncie)
-        return FavouriteDiet.objects.filter(user=self.request.user)
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['user',]

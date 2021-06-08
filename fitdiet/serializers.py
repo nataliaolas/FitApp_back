@@ -63,7 +63,7 @@ class MealSerializer(serializers.ModelSerializer):
         instance.carbohydrates = validated_data.get('carbohydrates', instance.carbohydrates)
         instance.save()
         ingredients = validated_data['ingredients']
-        existing_ingredients = instance.Ingredients.all()
+        existing_ingredients = instance.ingredients.all()
         #maybe it's better to just clear existing_ingredients/steps(delete objects) and then create objects based on ingredients/steps
         if len(ingredients) == len(existing_ingredients):
             for i in range(len(ingredients)):
@@ -81,7 +81,7 @@ class MealSerializer(serializers.ModelSerializer):
             for i in range(len(ingredients)):
                 existing_ingredients[i].ingredient = ingredients[i]['ingredient']
                 existing_ingredients[i].portion = ingredients[i]['portion']
-                existing_ingredients.save()
+                existing_ingredients[i].save()
             for i in range(len(existing_ingredients)-(len(existing_ingredients)-len(ingredients)), len(existing_ingredients)):
                 existing_ingredients[i].delete()
         else:

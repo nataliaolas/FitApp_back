@@ -1,3 +1,4 @@
+from typing import List
 from .serializers import ExerciseEquipmentSerializer, ExerciseInWorkoutSerializer, ExerciseSerializer, ExerciseStepSerializer, FavouriteExerciseSerializer, FavouriteWorkoutPlanSerializer, FavouriteWorkoutSessionSerializer, MuscleGroupSerializer, USerWorkoutPlanSerializer, WorkoutPlanSerializer, WorkoutSessionSerializer
 from .models import Exercise, ExerciseEquipment, ExerciseInWorkout, ExerciseStep, FavouriteExercise, FavouriteWorkoutPlan, FavouriteWorkoutSession, MuscleGroup, UserWorkoutPlan, WorkoutPlan, WorkoutSession
 from rest_framework import mixins
@@ -6,6 +7,7 @@ from rest_framework import filters
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from braces.views import CsrfExemptMixin
+from django_filters.rest_framework import DjangoFilterBackend
 # Create your views here.
 
 
@@ -60,6 +62,21 @@ class ExerciseView(mixins.CreateModelMixin,
         print(request.data['muscle_groups'])
         print("\n\n **************** \n")
         return super().create(request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs):
+        print("\n\n ***************\n")
+        print(request.data)
+        print("\n\n **************** \n")
+        print("\n\n ***************\n")
+        print(request.data['muscle_groups'])
+        is_muscle_groups_list = isinstance(request.data['muscle_groups'], list)
+        if is_muscle_groups_list == False:
+            muscle_groups_list = []
+            muscle_groups_list.append(request.data['muscle_groups'])
+            request.data['muscle_groups'] = muscle_groups_list
+        print(request.data['muscle_groups'])
+        print("\n\n **************** \n")
+        return super().update(request, *args, **kwargs)
 
 
 @api_view(['GET'])
@@ -87,6 +104,7 @@ class WorkoutSessionView(mixins.CreateModelMixin,
                   viewsets.GenericViewSet):
     queryset = WorkoutSession.objects.all()
     serializer_class = WorkoutSessionSerializer
+
 
 class WorkoutPlanView(mixins.CreateModelMixin,
                   mixins.ListModelMixin,
@@ -121,6 +139,14 @@ def workout_sessions_in_plan(request,pk):
         return Response(serializer.data)
     return Response("Cos nie pyklo")
 
+# @api_view(['GET'])
+# def exercise_in_workout_with_exercise_names(request, pk):
+#     if request.method == 'GET':
+#         exercise_in_workout = ExerciseInWorkout.objects.filter(workout_session=pk)
+#         serializer = ExerciseInWorkoutWithExerciseNameSerializer(exercise_in_workout,many=True)
+#         return Response(serializer.data)
+#     return Response("Cos nie pyklo")
+
 
 class FavouriteExerciseView(mixins.CreateModelMixin,
                   mixins.ListModelMixin,
@@ -130,12 +156,8 @@ class FavouriteExerciseView(mixins.CreateModelMixin,
                   viewsets.GenericViewSet):
     queryset = FavouriteExercise.objects.all()
     serializer_class = FavouriteExerciseSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name',]
-
-    def get_queryset(self):
-    #TODO: Mozliwe ze trzeba to zrobic zeby zwracalo posilki(bo teraz to moze byc klopotliwe po froncie)
-        return FavouriteExercise.objects.filter(user=self.request.user)
+    filter_backends = [DjangoFilterBackend]
+    search_fields = ['user',]
 
 class FavouriteWorkoutSessionView(mixins.CreateModelMixin,
                   mixins.ListModelMixin,
@@ -145,10 +167,9 @@ class FavouriteWorkoutSessionView(mixins.CreateModelMixin,
                   viewsets.GenericViewSet):
     queryset = FavouriteWorkoutSession.objects.all()
     serializer_class = FavouriteWorkoutSessionSerializer
+    filter_backends = [DjangoFilterBackend]
+    search_fields = ['user',]
 
-    def get_queryset(self):
-    #TODO: Mozliwe ze trzeba to zrobic zeby zwracalo posilki(bo teraz to moze byc klopotliwe po froncie)
-        return FavouriteWorkoutSession.objects.filter(user=self.request.user)
 
 class FavouriteWorkoutPlanView(mixins.CreateModelMixin,
                   mixins.ListModelMixin,
@@ -158,7 +179,5 @@ class FavouriteWorkoutPlanView(mixins.CreateModelMixin,
                   viewsets.GenericViewSet):
     queryset = FavouriteWorkoutPlan.objects.all()
     serializer_class = FavouriteWorkoutPlanSerializer
-
-    def get_queryset(self):
-    #TODO: Mozliwe ze trzeba to zrobic zeby zwracalo posilki(bo teraz to moze byc klopotliwe po froncie)
-        return FavouriteWorkoutPlan.objects.filter(user=self.request.user)
+    filter_backends = [DjangoFilterBackend]
+    search_fields = ['user',]
