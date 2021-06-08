@@ -20,5 +20,6 @@ router.register(r'FavouriteWorkoutPlan', views.FavouriteWorkoutPlanView)
 
 app_name = 'fitdiet'
 urlpatterns = [
-    path('', include(router.urls)),
+     path('workoutplansessions/<int:pk>', views.workout_sessions_in_plan),
+     path('userexercises/<int:pk>', views.user_exercises)
 ]

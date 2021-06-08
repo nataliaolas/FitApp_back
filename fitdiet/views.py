@@ -1,10 +1,10 @@
-from .serializers import CookingStepSerializer, DietDaySerializer, DietSerializer, FavouriteDietSerializer, FavouriteMealSerializer, MealSerializer,UserDietSerializer
-from .models import CookingStep, Diet, DietDay, FavouriteDiet, FavouriteMeal, Meal, UserDiet
+from .serializers import CookingStepSerializer, DietDaySerializer, DietSerializer, FavouriteDietSerializer, FavouriteMealSerializer, MealSerializer, UserDietDaySerializer,UserDietSerializer
+from .models import CookingStep, Diet, DietDay, FavouriteDiet, FavouriteMeal, Meal, UserDiet, UserDietDay
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework import filters
 from rest_framework.decorators import api_view
-
+from rest_framework.response import Response
 # Create your views here.
 
 class MealView(mixins.CreateModelMixin,
@@ -18,12 +18,14 @@ class MealView(mixins.CreateModelMixin,
     filter_backends = [filters.SearchFilter]
     search_fields = ['name',]
 
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_superuser:
-            return Meal.objects.all()
-        else:
-            return Meal.objects.filter(public=True)
+
+@api_view(['GET'])
+def user_exercises(request,pk):
+    if request.method == 'GET':
+        meal = Meal.objects.filter(author=pk)
+        serializer = MealSerializer(meal,many=True)
+        return Response(serializer.data)
+    return Response("Cos nie pyklo")
 
 class DietView(mixins.CreateModelMixin,
                   mixins.ListModelMixin,
@@ -55,6 +57,15 @@ class UserDietView(mixins.CreateModelMixin,
                   viewsets.GenericViewSet):
     queryset = UserDiet.objects.all()
     serializer_class = UserDietSerializer
+
+class UserDietDayView(mixins.CreateModelMixin,
+                  mixins.ListModelMixin,
+                  mixins.DestroyModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  viewsets.GenericViewSet):
+    queryset = UserDietDay.objects.all()
+    serializer_class = UserDietDaySerializer
 
 class DietDayView(mixins.CreateModelMixin,
                   mixins.ListModelMixin,

@@ -71,7 +71,7 @@ class WorkoutPlan(models.Model):
     description = models.TextField()
     duration_in_days = models.IntegerField(default=5)
     workout_sessions = models.ManyToManyField('WorkoutSession')
-
+    workout_session_row = models.IntegerField()
     def __str__(self):
         return self.name + " czas trwania " + str(self.duration_in_days) +" dni"
 
@@ -104,7 +104,7 @@ class UserWorkoutSession(models.Model):
 
 class UserWorkoutPlan(models.Model):
     start_date = models.DateField()
-    end_date = models.DateField()
+    end_date = models.DateField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     workout_plan = models.ForeignKey(
         WorkoutPlan, on_delete=models.CASCADE)

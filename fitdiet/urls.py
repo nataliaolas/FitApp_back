@@ -8,6 +8,7 @@ router = routers.SimpleRouter()
 router.register(r'Diet', views.DietView)
 router.register(r'Meal', views.MealView)
 router.register(r'UserDiet', views.UserDietView)
+router.register(r'UserDietDay', views.UserDietDayView)
 router.register(r'DietDay', views.DietDayView)
 router.register(r'CookingStep', views.CookingStepView)
 router.register(r'FavouriteMeal', views.FavouriteMealView)
@@ -16,5 +17,5 @@ router.register(r'FavouriteDiet', views.FavouriteDietView)
 
 app_name = 'fitdiet'
 urlpatterns = [
-    path('', include(router.urls)),
+    path('usermeals/<int:pk>', views.user_exercises),
 ]

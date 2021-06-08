@@ -33,6 +33,8 @@ urlpatterns = [
     path('auth/register', api.RegisterAPI.as_view()),
     path('auth/login', api.LoginAPI.as_view()),
     path('auth/logout', api.Logout.as_view()),
+    path('workout_plan_sessions/', include('workout.urls')),
+    path('user_meals/', include('fitdiet.urls')),
     path('', include(router.urls)),
     # path('', include('workout.urls')),
     # path('diet/', include('fitdiet.urls')),

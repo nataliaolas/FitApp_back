@@ -3,7 +3,9 @@ from .models import Exercise, ExerciseEquipment, ExerciseInWorkout, ExerciseStep
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework import filters
+from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from braces.views import CsrfExemptMixin
 # Create your views here.
 
 
@@ -46,12 +48,27 @@ class ExerciseView(mixins.CreateModelMixin,
     filter_backends = [filters.SearchFilter]
     search_fields = ['name',]
 
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_superuser:
-            return Exercise.objects.all()
-        else:
-            return Exercise.objects.filter(public=True)
+    def create(self, request, *args, **kwargs):
+        print("\n\n ***************\n")
+        print(request.data)
+        print("\n\n **************** \n")
+        print("\n\n ***************\n")
+        print(request.data['muscle_groups'])
+        muscle_groups_list = []
+        muscle_groups_list.append(request.data['muscle_groups'])
+        request.data['muscle_groups'] = muscle_groups_list
+        print(request.data['muscle_groups'])
+        print("\n\n **************** \n")
+        return super().create(request, *args, **kwargs)
+
+
+@api_view(['GET'])
+def user_exercises(request,pk):
+    if request.method == 'GET':
+        exercise = Exercise.objects.filter(author=pk)
+        serializer = ExerciseSerializer(exercise,many=True)
+        return Response(serializer.data)
+    return Response("Cos nie pyklo")
 
 class ExerciseInWorkoutView(mixins.CreateModelMixin,
                   mixins.ListModelMixin,
@@ -83,38 +100,9 @@ class WorkoutPlanView(mixins.CreateModelMixin,
     search_fields = ['name',]
 
 
-""" A to sie przyda tu 
 
-              for index, workout_session in enumerate(workout_sessions):
-                    day_date = start + timedelta(days=index)
-                    UserWorkoutSession.objects.create(
-                        workout_plan=user_workout_plan,
-                        workout_session=workout_session,
-                        date_of_workout=day_date)
-
-Nad tym sie zastanowic tez czy moze nie powinno byc cos w tym stylu:
-@login_required
-def add_workout_plan_to_favourites(request, workout_plan_id):
-    try:
-        FavouriteWorkoutPlan.objects.get(
-            workout_plan_id=workout_plan_id, user=request.user)
-        return JsonResponse({'status': 'fail', 'message': _("This workout plan already is favourite")})
-    except FavouriteWorkoutPlan.DoesNotExist:
-        pass
-
-    try:
-        workout_plan = WorkoutPlan.objects.get(pk=workout_plan_id)
-    except WorkoutPlan.DoesNotExist:
-        return JsonResponse({'status': 'fail', 'message': _("This workout plan does not exist")})
-
-    FavouriteWorkoutPlan.objects.create(
-        workout_plan=workout_plan, user=request.user)
-    return JsonResponse({'status': 'success'})
-
-
-"""
-
-class UserWorkoutPlanView(mixins.CreateModelMixin,
+class UserWorkoutPlanView(CsrfExemptMixin,
+                  mixins.CreateModelMixin,
                   mixins.ListModelMixin,
                   mixins.DestroyModelMixin,
                   mixins.UpdateModelMixin,
@@ -124,7 +112,14 @@ class UserWorkoutPlanView(mixins.CreateModelMixin,
     serializer_class = USerWorkoutPlanSerializer
 
 
-# @api_view(['POST'])
+@api_view(['GET'])
+def workout_sessions_in_plan(request,pk):
+    if request.method == 'GET':
+        workout_plan = WorkoutPlan.objects.get(id=pk)
+        workout_sessions = workout_plan.workout_sessions
+        serializer = WorkoutSessionSerializer(workout_sessions,many=True)
+        return Response(serializer.data)
+    return Response("Cos nie pyklo")
 
 
 class FavouriteExerciseView(mixins.CreateModelMixin,

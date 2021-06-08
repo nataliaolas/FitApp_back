@@ -39,11 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'knox',
     'rest_framework.authtoken',
+    'django_filters',
+    'corsheaders',
     'fitdiet',
     'workout',
     'main',
-    'knox'
 ]
 
 MIDDLEWARE = [
@@ -144,14 +146,17 @@ REST_FRAMEWORK = {
     ],
 }
 REST_AUTH_REGISTER_SERIALIZERS = {
-     'REGISTER_SERIALIZER': 'jedzenie.serializers.RegisterSerializer',
+     'REGISTER_SERIALIZER': 'main.serializers.RegisterSerializer',
 }
 
 MIDDLEWARE_CLASSES = (
-    #'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.BrokenLinkEmailsMiddleware',
     'django.middleware.common.CommonMiddleware',
 )
 
 MEDIA_ROOT =  os.path.join(BASE_DIR, 'media') 
 MEDIA_URL = '/media/'
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True

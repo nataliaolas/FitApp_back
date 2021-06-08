@@ -7,6 +7,7 @@ from . import api
 # router = routers.DefaultRouter()
 router = routers.SimpleRouter()
 router.register(r'measurement', views.MeasurementView)
+router.register(r'UsersList', views.UserView)
 
 
 app_name = 'main'

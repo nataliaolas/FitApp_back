@@ -1,7 +1,9 @@
-from .models import Exercise, ExerciseEquipment, ExerciseInWorkout, ExerciseStep, FavouriteExercise, FavouriteWorkoutPlan, FavouriteWorkoutSession, MuscleGroup, UserWorkoutPlan, WorkoutPlan, WorkoutSession
+from django.db.models.query import QuerySet
+from .models import Exercise, ExerciseEquipment, ExerciseInWorkout, ExerciseStep, FavouriteExercise, FavouriteWorkoutPlan, FavouriteWorkoutSession, MuscleGroup, UserWorkoutPlan, UserWorkoutSession, WorkoutPlan, WorkoutSession
 import datetime
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from datetime import timedelta
 
 class MuscleGroupSerializer(serializers.ModelSerializer):
     class Meta:
@@ -112,6 +114,42 @@ class USerWorkoutPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserWorkoutPlan
         fields = '__all__'
+
+    def create(self, validated_data):
+        print("\n***************************")
+        print("VALIDATED DATA")
+        print(validated_data)
+        print("\n***************************")
+        user = validated_data['user']
+        workout_plan = validated_data['workout_plan']
+        start_date = validated_data['start_date']
+        end_date = start_date + timedelta(days=workout_plan.duration_in_days)
+        user_workout_plan = UserWorkoutPlan.objects.create(
+            start_date=start_date,
+            end_date=end_date,
+            user=user,
+            workout_plan=workout_plan
+        )
+        session_date = start_date
+        workout_sessions = workout_plan.workout_sessions.all()
+        workout_session_counter =0
+        for i in range(workout_plan.duration_in_days):
+            if workout_session_counter > len(workout_sessions)-1:
+                workout_session_counter = 0
+            session_date += timedelta(days=i)
+            if  i % (workout_plan.workout_session_row+1) == 0:
+                pass
+            elif workout_plan.workout_session_row == 2 and i%7 == 0:
+                pass
+            else:
+                UserWorkoutSession.objects.create(
+                    workout_plan=user_workout_plan,
+                    workout_session=workout_sessions[workout_session_counter],
+                    date_of_workout=session_date
+                )
+                workout_session_counter += 1
+        
+        return super().create(validated_data)
 
 
 class FavouriteExerciseSerializer(serializers.ModelSerializer):

@@ -22,6 +22,9 @@ class MealSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
+        print("\n\n ****************** \n")
+        print(validated_data)
+        print("\n\n ****************** \n")
         new_meal = Meal.objects.create(
             name=validated_data['name'],
             picture=validated_data['picture'],
@@ -146,18 +149,48 @@ class UserDietSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserDiet
         fields = '__all__'
+
+    def create(self, validated_data):
+        print("\n***************************")
+        print("VALIDATED DATA")
+        print(validated_data)
+        print("\n***************************")
+        user = validated_data['user']
+        diet = validated_data['diet']
+        start_date = validated_data['start_date']
+        end_date = start_date + datetime.timedelta(days=diet.duration_in_days)
+        user_diet_plan = UserDiet.objects.create(
+            start_date=start_date,
+            end_date=end_date,
+            user=user,
+            diet=diet
+        )
+        eating_date = start_date
+        diet_days = diet.diet_days.all()
+
+        for i in range(diet.duration_in_days):
+            print("\n***************************")
+            print("DIET DAY OD I")
+            print(diet_days[i])
+            print("\n***************************")
+            UserDietDay.objects.create(
+                diet=user_diet_plan,
+                diet_day=diet_days[i],
+                diet_day_date=eating_date
+            )
+            eating_date = eating_date + datetime.timedelta(days=i)
     
+        return user_diet_plan
+
+
     def validate(self, data):
-        
-        if data['start_date'] > data['end_date']:
-            raise serializers.ValidationError({"start_date" : 'Data rozpoczecia nie moze byc mniejsza od daty zakonczenia'})
-        
-        elif data['start_date'] < datetime.datetime.now():
+        print("\n***************************")
+        print(data['start_date'])
+        print(datetime.date.today())
+        print("\n***************************")
+        if data['start_date'] < datetime.date.today():
             raise serializers.ValidationError({"start_date" : 'Data rozpoczecia nie moze byc z przeszlosci'})
         
-        elif data['end_date'] < datetime.datetime.now():
-            raise serializers.ValidationError({"end_date" : 'Data zakonczenia nie moze byc z przeszlosci'})
-
         return super().validate(data)
 
 
