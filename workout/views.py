@@ -1,6 +1,6 @@
 import datetime
 from typing import List
-from .serializers import ExerciseEquipmentSerializer, ExerciseInWorkoutSerializer, ExerciseSerializer, ExerciseStepSerializer, FavouriteExerciseSerializer, FavouriteWorkoutPlanSerializer, FavouriteWorkoutSessionSerializer, MuscleGroupSerializer, USerWorkoutPlanSerializer, UserWorkoutSessionSerializer, WorkoutPlanSerializer, WorkoutSessionSerializer
+from .serializers import ExerciseEquipmentSerializer, ExerciseInWorkoutSerializer, ExerciseInWorkoutWithExerciseNameSerializer, ExerciseSerializer, ExerciseStepSerializer, FavouriteExerciseSerializer, FavouriteWorkoutPlanSerializer, FavouriteWorkoutSessionSerializer, MuscleGroupSerializer, USerWorkoutPlanSerializer, UserWorkoutSessionSerializer, WorkoutPlanSerializer, WorkoutSessionSerializer
 from .models import Exercise, ExerciseEquipment, ExerciseInWorkout, ExerciseStep, FavouriteExercise, FavouriteWorkoutPlan, FavouriteWorkoutSession, MuscleGroup, UserWorkoutPlan, UserWorkoutSession, WorkoutPlan, WorkoutSession
 from rest_framework import mixins
 from rest_framework import viewsets
@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from braces.views import CsrfExemptMixin
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import generics
 # Create your views here.
 
 
@@ -80,6 +81,19 @@ class ExerciseView(mixins.CreateModelMixin,
         return super().update(request, *args, **kwargs)
 
 
+
+@api_view(['GET'])
+def user_fav_exercise_view(request,pk):
+    if request.method == 'GET':
+        user_favourites = FavouriteExercise.objects.filter(user=pk)
+        fav_exercises_id_list = []
+        for i in user_favourites:
+            fav_exercises_id_list.append(i.exercise.id)
+        filtered_list = Exercise.objects.filter(id__in=fav_exercises_id_list)
+        serializer = ExerciseSerializer(filtered_list,many=True)
+        return Response(serializer.data)
+
+
 @api_view(['GET'])
 def user_exercises(request,pk):
     if request.method == 'GET':
@@ -105,6 +119,9 @@ class WorkoutSessionView(mixins.CreateModelMixin,
                   viewsets.GenericViewSet):
     queryset = WorkoutSession.objects.all()
     serializer_class = WorkoutSessionSerializer
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name',]
 
 
 class WorkoutPlanView(mixins.CreateModelMixin,
@@ -173,6 +190,7 @@ class FavouriteExerciseView(mixins.CreateModelMixin,
     filter_backends = [DjangoFilterBackend]
     search_fields = ['user',]
 
+
 class FavouriteWorkoutSessionView(mixins.CreateModelMixin,
                   mixins.ListModelMixin,
                   mixins.DestroyModelMixin,
@@ -195,3 +213,15 @@ class FavouriteWorkoutPlanView(mixins.CreateModelMixin,
     serializer_class = FavouriteWorkoutPlanSerializer
     filter_backends = [DjangoFilterBackend]
     search_fields = ['user',]
+
+    
+class ExerciseInWorkoutSessionWithExerciseName(mixins.CreateModelMixin,
+                  mixins.ListModelMixin,
+                  mixins.DestroyModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  viewsets.GenericViewSet):
+    queryset = ExerciseInWorkout.objects.all()
+    serializer_class = ExerciseInWorkoutWithExerciseNameSerializer
+    filter_backends = [DjangoFilterBackend]
+    search_fields = ['workout_session',]

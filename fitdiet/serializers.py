@@ -208,3 +208,9 @@ class FavouriteDietSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavouriteDiet
         fields = '__all__'
+
+class DietDayWithMealNamesSerializer(serializers.ModelSerializer):
+    meals = serializers.StringRelatedField(many=True)
+    class Meta:
+        model = DietDay
+        fields='__all__'

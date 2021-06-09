@@ -1,4 +1,4 @@
-from .serializers import CookingStepSerializer, DietDaySerializer, DietSerializer, FavouriteDietSerializer, FavouriteMealSerializer, MealSerializer, UserDietDaySerializer,UserDietSerializer
+from .serializers import CookingStepSerializer, DietDaySerializer, DietDayWithMealNamesSerializer, DietSerializer, FavouriteDietSerializer, FavouriteMealSerializer, MealSerializer, UserDietDaySerializer,UserDietSerializer
 from .models import CookingStep, Diet, DietDay, FavouriteDiet, FavouriteMeal, Meal, UserDiet, UserDietDay
 from rest_framework import mixins
 from rest_framework import viewsets
@@ -29,6 +29,13 @@ def user_exercises(request,pk):
         return Response(serializer.data)
     return Response("Cos nie pyklo")
 
+@api_view(['GET'])
+def user_favdiets(request,pk):
+    if request.method == 'GET':
+        user_diets = FavouriteDiet.objects.filter(user=pk)
+        serializer = FavouriteDietSerializer(user_diets,many=True)
+        return Response(serializer.data)
+    return Response("Cos nie pyklo")
 
 @api_view(['GET'])
 def diet_days_in_diet(request,pk):
@@ -136,3 +143,26 @@ class FavouriteDietView(mixins.CreateModelMixin,
 
     filter_backends = [filters.SearchFilter]
     search_fields = ['user',]
+
+
+class DietDayWithMealsNamesView(mixins.CreateModelMixin,
+                  mixins.ListModelMixin,
+                  mixins.DestroyModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  viewsets.GenericViewSet):
+    queryset = DietDay.objects.all()
+    serializer_class = DietDayWithMealNamesSerializer
+
+
+@api_view(['GET'])
+def user_fav_meal_view(request,pk):
+    if request.method == 'GET':
+        user_favourites = FavouriteMeal.objects.filter(user=pk)
+        fav_exercises_id_list = []
+        for i in user_favourites:
+            fav_exercises_id_list.append(i.meal.id)
+        filtered_list = Meal.objects.filter(id__in=fav_exercises_id_list)
+        serializer = MealSerializer(filtered_list,many=True)
+        return Response(serializer.data)
+

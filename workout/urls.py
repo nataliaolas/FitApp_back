@@ -16,12 +16,13 @@ router.register(r'UserWorkoutPlan', views.UserWorkoutPlanView)
 router.register(r'FavouriteExercise', views.FavouriteExerciseView)
 router.register(r'FavouriteWorkoutSession', views.FavouriteWorkoutSessionView)
 router.register(r'FavouriteWorkoutPlan', views.FavouriteWorkoutPlanView)
-
+router.register(r'ExerciseInWorkoutSessionWithExerciseName', views.ExerciseInWorkoutSessionWithExerciseName)
 
 app_name = 'fitdiet'
 urlpatterns = [
      path('workoutplansessions/<int:pk>', views.workout_sessions_in_plan),
      path('userexercises/<int:pk>', views.user_exercises),
-     path('current_workout_session/<int:pk>', views.current_workout_session)
+     path('current_workout_session/<int:pk>', views.current_workout_session),
+     path('filtered_fav_ex/<int:pk>', views.user_fav_exercise_view)
      # path('exercises_in_session/<int:pk>',views.exercise_in_workout_with_exercise_names)
 ]
