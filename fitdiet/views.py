@@ -46,19 +46,21 @@ def diet_days_in_diet(request,pk):
         return Response(serializer.data)
     return Response("Cos nie pyklo")
 
-
 @api_view(['GET'])
-def current_diet_day(request,pk):
+def current_diet(request,pk):
     if request.method == 'GET':
         diet = UserDiet.objects.get(id=pk)
         now = datetime.datetime.now()
-        diet_day = UserDietDay.objects.get(diet=diet, diet_day_date=now)
+        diet_day = Diet.objects.get(diet=diet)
         if diet_day:
             serializer = UserDietDaySerializer(diet_day)
         else:
             return Response("Nie ma dzisiaj diety.")
         return Response(serializer.data)
     return Response("Cos nie pyklo")
+
+
+
 
 
 class DietView(mixins.CreateModelMixin,
@@ -176,3 +178,37 @@ def user_fav_diet_view(request,pk):
         filtered_list = Diet.objects.filter(id__in=fav_exercises_id_list)
         serializer = DietSerializer(filtered_list,many=True)
         return Response(serializer.data)
+
+@api_view(['GET'])
+def current_diet_day(request,pk):
+    if request.method == 'GET':
+        # now = datetime.datetime.now()
+        # diet = UserDiet.objects.filter(user=pk, start_date=now)
+        try:
+            now = datetime.datetime.now()
+            diet = UserDiet.objects.filter(user=pk, start_date=now)
+        except:
+            print("COS NIE PYKLO HALO HALO")
+            return Response("Cos nie pyklo")
+        else:
+            current_diet = 0
+            for i in range(len(diet)):
+                if i == len(diet)-1:
+                    current_diet = diet[i].diet
+            print(current_diet)
+            diet_days = current_diet.diet_days
+            serializer = DietDaySerializer(diet_days,many=True)
+            print("""\n\n\n SUCCUESS \n\n """)
+            return Response(serializer.data)
+    return Response("Cos nie pyklo")
+
+
+
+#     @api_view(['GET'])
+# def diet_days_in_diet(request,pk):
+#     if request.method == 'GET':
+#         diet = Diet.objects.get(id=pk)
+#         diet_days = diet.diet_days
+#         serializer = DietDaySerializer(diet_days,many=True)
+#         return Response(serializer.data)
+#     return Response("Cos nie pyklo")
