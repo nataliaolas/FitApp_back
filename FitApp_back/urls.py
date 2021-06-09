@@ -43,3 +43,4 @@ urlpatterns = [
     # path('main/', include('main.urls'))
     # path('', include('fitdiet.urls'))
 ] +  static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+ #current_workout_sessions

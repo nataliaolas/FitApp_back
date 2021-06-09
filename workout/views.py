@@ -248,3 +248,27 @@ class ExerciseInWorkoutSessionWithExerciseName(mixins.CreateModelMixin,
     serializer_class = ExerciseInWorkoutWithExerciseNameSerializer
     filter_backends = [DjangoFilterBackend]
     search_fields = ['workout_session',]
+
+
+@api_view(['GET'])
+def current_workout_sessions(request,pk):
+    if request.method == 'GET':
+        # now = datetime.datetime.now()
+        # diet = UserDiet.objects.filter(user=pk, start_date=now)
+        try:
+            now = datetime.datetime.now()
+            workout_plan = UserWorkoutPlan.objects.filter(user=pk, start_date=now)
+        except:
+            print("COS NIE PYKLO HALO HALO")
+            return Response("Cos nie pyklo")
+        else:
+            current_workout_plan = 0
+            for i in range(len(workout_plan)):
+                if i == len(workout_plan)-1:
+                    current_workout_plan = workout_plan[i].workout_plan
+            print(current_workout_plan)
+            workout_sessions = current_workout_plan.workout_sessions
+            serializer = WorkoutSessionSerializer(workout_sessions,many=True)
+            print("""\n\n\n SUCCUESS \n\n """)
+            return Response(serializer.data)
+    return Response("Cos nie pyklo")
