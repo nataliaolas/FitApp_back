@@ -22,5 +22,6 @@ urlpatterns = [
     path('userfavdiets/<int:pk>', views.user_favdiets),
     path('diet_days_in_diet/<int:pk>', views.diet_days_in_diet),
     path('current_diet_day/<int:pk>', views.current_diet_day),
-    path('user_fav_meal_view/<int:pk>', views.user_fav_meal_view)
+    path('user_fav_meal_view/<int:pk>', views.user_fav_meal_view),
+    path('user_fav_diet_view/<int:pk>', views.user_fav_diet_view)
 ]

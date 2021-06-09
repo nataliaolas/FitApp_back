@@ -95,6 +95,29 @@ def user_fav_exercise_view(request,pk):
 
 
 @api_view(['GET'])
+def user_fav_workoutplan_view(request,pk):
+    if request.method == 'GET':
+        user_favourites = FavouriteWorkoutPlan.objects.filter(user=pk)
+        fav_exercises_id_list = []
+        for i in user_favourites:
+            fav_exercises_id_list.append(i.workout_plan.id)
+        filtered_list = WorkoutPlan.objects.filter(id__in=fav_exercises_id_list)
+        serializer = WorkoutPlanSerializer(filtered_list,many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def user_fav_workoutsession_view(request,pk):
+    if request.method == 'GET':
+        user_favourites = FavouriteWorkoutSession.objects.filter(user=pk)
+        fav_exercises_id_list = []
+        for i in user_favourites:
+            fav_exercises_id_list.append(i.workout_session.id)
+        filtered_list = WorkoutSession.objects.filter(id__in=fav_exercises_id_list)
+        serializer = WorkoutSessionSerializer(filtered_list,many=True)
+        return Response(serializer.data)
+
+
+@api_view(['GET'])
 def user_exercises(request,pk):
     if request.method == 'GET':
         exercise = Exercise.objects.filter(author=pk)

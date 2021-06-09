@@ -141,9 +141,8 @@ class FavouriteDietView(mixins.CreateModelMixin,
     queryset = FavouriteDiet.objects.all()
     serializer_class = FavouriteDietSerializer
 
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [DjangoFilterBackend]
     search_fields = ['user',]
-
 
 class DietDayWithMealsNamesView(mixins.CreateModelMixin,
                   mixins.ListModelMixin,
@@ -166,3 +165,14 @@ def user_fav_meal_view(request,pk):
         serializer = MealSerializer(filtered_list,many=True)
         return Response(serializer.data)
 
+
+@api_view(['GET'])
+def user_fav_diet_view(request,pk):
+    if request.method == 'GET':
+        user_favourites = FavouriteDiet.objects.filter(user=pk)
+        fav_exercises_id_list = []
+        for i in user_favourites:
+            fav_exercises_id_list.append(i.diet.id)
+        filtered_list = Diet.objects.filter(id__in=fav_exercises_id_list)
+        serializer = DietSerializer(filtered_list,many=True)
+        return Response(serializer.data)
